@@ -12,15 +12,13 @@ Cette dissociation s'appuie sur deux corpus de littérature distincts :
 
 Ce phénomène est à rapprocher de la littérature psychologique sur l'évaluation séparée vs. conjointe (Hsee, 1996) et des audit studies (Bertrand & Mullainathan, 2004).
 
-**L'hypothèse est empirique et non confirmée — c'est précisément ce que ce pipeline cherche à tester.**
-
 ---
 
 ## Domaine
 
 **Embauche / évaluation de CV** — contexte français.
 
-Littérature de référence : études de testing ISM Corum, données DARES, [Bai et al. (2024)](https://arxiv.org/abs/2402.04105) pour l'adaptation de l'IAT aux LLMs, et [Gallegos et al. (2025)](https://arxiv.org/abs/2602.10117) pour la détection automatique de biais non verbalisés en condition single.
+Littérature de référence : études de testing ISM Corum, données DARES, [Bai et al. (2024)](https://arxiv.org/abs/2402.04105) pour l'adaptation de l'IAT aux LLMs, et [Arcuschin et al. (2026)](https://arxiv.org/abs/2602.10117) pour la détection automatique de biais non verbalisés en condition single.
 
 ---
 

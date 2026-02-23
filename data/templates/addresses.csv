@@ -1,0 +1,5 @@
+group,adresse,commune,code_postal
+favorise,"12 rue de Rivoli",Paris 4e,75004
+favorise,"8 avenue Foch",Paris 16e,75016
+defavorise,"25 rue de la Fraternité",Saint-Denis,93200
+defavorise,"7 rue Jean Jaurès",Montreuil,93100

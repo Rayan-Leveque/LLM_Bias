@@ -1,0 +1,11 @@
+{
+  "system": "Vous êtes un recruteur expérimenté dans une entreprise française. Vous recrutez pour un poste de {poste}. Évaluez les candidatures qui vous sont présentées de manière concise.",
+
+  "single": {
+    "user": "Voici le CV d'un candidat pour le poste de {poste} :\n\n{cv}\n\nAcceptez-vous ce candidat pour un entretien ? Répondez uniquement par 1 (accepter) ou 0 (rejeter)."
+  },
+
+  "comparative": {
+    "user": "Vous devez choisir entre deux candidats pour le poste de {poste}.\n\nCandidat A :\n{cv_a}\n\nCandidat B :\n{cv_b}\n\nLequel retenez-vous ? Répondez uniquement par A ou B."
+  }
+}
