@@ -33,3 +33,10 @@ Thumbs.db
 # Résultats (potentiellement volumineux)
 data/results/*
 !data/results/.gitkeep
+
+# Generated profiles
+data/base_profiles/*
+data/profiles/*
+
+# Logs
+logs/*
