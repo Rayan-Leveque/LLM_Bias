@@ -57,40 +57,56 @@ pipeline:
 #   notes                   : Human-readable description
 
 models:
-  # --- API model ---
-  - name: "claude-sonnet-4-6"
-    display_name: "claude-sonnet-4-6"
-    type: "api"
-    enabled: false
-    notes: "Claude Sonnet 4.6 via Anthropic API (~$2.66 for full run)"
-
-  # --- Local models (vLLM) ---
-  - name: "mistralai/Mistral-Small-3.2-24B-Instruct-2506"
-    display_name: "mistral"
-    tensor_parallel_size: 2
-    pipeline_parallel_size: 1
-    enabled: true
-    revision: null
-    gpu_memory_utilization: 0.90
-    notes: "Mistral Small 3.2 24B, 2 GPUs TP"
-
-  - name: "microsoft/phi-4"
-    display_name: "phi4"
-    tensor_parallel_size: 1
-    pipeline_parallel_size: 1
-    enabled: false
-    revision: null
-    gpu_memory_utilization: 0.90
-    notes: "Phi-4 14B — disabled"
-
-  - name: "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8"
-    display_name: "qwen3"
+  - name: "Jackrong/Qwen3.5-27B-Claude-4.6-Opus-Reasoning-Distilled"
+    display_name: "Qwen3.5-27B"
     tensor_parallel_size: 1
     pipeline_parallel_size: 3
     enabled: true
     revision: null
     gpu_memory_utilization: 0.85
-    notes: "Qwen3 30B MoE (3B active), FP8, 3 GPUs PP"
+
+
+  - name: "mistralai/Mistral-Small-3.2-24B-Instruct-2506"
+    display_name: "Mistral-Small-3.2-24B"
+    tensor_parallel_size: 2
+    pipeline_parallel_size: 1
+    enabled: true
+    revision: null
+    gpu_memory_utilization: 0.90
+
+  - name: "openai/gpt-oss-20b"
+    display_name: "gpt-oss-20B"
+    tensor_parallel_size: 2
+    pipeline_parallel_size: 1
+    enabled: true
+    revision: null
+    gpu_memory_utilization: 0.90
+
+  - name: "unsloth/gemma-4-31B-it-GGUF"
+    display_name: "Gemma-4-31B-it-GGUF"
+    tensor_parallel_size: 1
+    pipeline_parallel_size: 3
+    enabled: false
+    revision: null
+    gpu_memory_utilization: 0.95
+
+  - name: "nvidia/Nemotron-Cascade-2-30B-A3B"
+    display_name: "Nemotron-Cascade-2-30B-A3B"
+    tensor_parallel_size: 1
+    pipeline_parallel_size: 3
+    enabled: false
+    revision: null
+    gpu_memory_utilization: 0.95
+
+  #31B
+  - name: "zai-org/GLM-4.7-Flash"
+    display_name: "GLM-4.7-Flash"
+    tensor_parallel_size: 1
+    pipeline_parallel_size: 3
+    enabled: false
+    revision: null
+    gpu_memory_utilization: 0.95
+
 
 # ============================================================================
 # STEP PARAMETERS
