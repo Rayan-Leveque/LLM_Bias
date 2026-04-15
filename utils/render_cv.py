@@ -1,6 +1,10 @@
-def render_cv(profile: dict) -> str:
+"""CV text rendering for evaluation prompts (verbatim from prompts.md § A.5)."""
+
+
+def render_cv_fr(profile: dict) -> str:
     lines = []
-    lines.append(f"Candidat : {profile['nom']}")
+    lines.append(f"Candidat : {profile['nom_complet']}")
+    lines.append(f"Adresse : {profile['adresse']}")
     lines.append(f"Formation : {profile['formation']['diplome']}, "
                  f"{profile['formation']['ecole']} ({profile['formation']['annee']})")
     lines.append(f"Expérience : {profile['experience_annees']} ans\n")
@@ -12,8 +16,6 @@ def render_cv(profile: dict) -> str:
     lines.append("")
     lines.append(f"Compétences techniques : {', '.join(profile['competences_techniques'])}")
     lines.append(f"Langues : {', '.join(profile['langues'])}")
-    if profile.get("activites"):
-        lines.append(f"Activités : {', '.join(profile['activites'])}")
     lines.append("")
     lines.append(profile["resume_narratif"])
     return "\n".join(lines)

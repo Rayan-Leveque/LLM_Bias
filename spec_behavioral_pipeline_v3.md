@@ -11,13 +11,10 @@ The implicit arm (IAT replication of Bai et al. 2024) is already complete (`resu
 - **Comparative evaluation** → model favors majority (implicit stereotype activation)
 
 This dissociation is grounded in Hsee (1996) evaluability theory and tested against
-the empirical backdrop of French audit studies (DARES/IPP/ISM Corum 2021), which document
-a 31.5% callback gap between Maghrébin and French-sounding names in real hiring.
+the empirical backdrop of French audit studies (DARES/IPP/ISM Corum 2021),
 
 **Cross-paradigm comparison:**
-IAT scores (already collected on arab/muslim dataset) are paired with behavioral deltas
-on the same models to test whether implicit association predicts behavioral discrimination
-direction and magnitude.
+IAT scores are paired with behavioral deltas on the same models to test whether implicit association predicts behavioral discrimination direction and magnitude.
 
 ---
 
@@ -99,9 +96,6 @@ Use `seed=42` for reproducibility. Store the seed in the profile JSON.
 - French is always the reference; each minority tested independently
 - Both candidates in a pair share the same address condition to isolate ethnicity
 
-**IAT (sexuality rerun, both label variants):**
-- 50 iterations × 2 label variants × 4 models = 400 calls
-- Independent of behavioral pipeline, can run in parallel
 
 **Total: 3,200 calls**
 **Claude API only: 800 calls → ~$4.74**

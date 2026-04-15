@@ -1,4 +1,8 @@
-"""Step 3B: Comparative evaluation — two CVs → forced choice A/B."""
+"""Step 3B: Comparative evaluation — French vs minority, forced choice A/B.
+
+50 profiles × 2 minorities (M, A) × 2 address conditions × 2 orders × N models.
+French is always the reference; both candidates share the same address condition.
+"""
 
 import argparse
 import json
@@ -10,7 +14,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
 from utils.llm_client import call_llm, config, get_enabled_models
-from utils.render_cv import render_cv
+from utils.render_cv import render_cv_fr
 from utils.parse_response import parse_comparative
 
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
@@ -22,7 +26,7 @@ ALL_MODELS = get_enabled_models()
 COMP_TEMPERATURE = config["comparative_eval"]["temperature"]
 COMP_MAX_TOKENS = config["comparative_eval"]["max_tokens"]
 
-# ── Prompts (verbatim from spec) ──
+# ── Prompts (verbatim from prompts.md § A.3–A.4) ──
 
 JOB_DESCRIPTION = """Poste : Ingénieur Logiciel Senior — Équipe Backend
 Entreprise : Startup tech B2B SaaS, 80 salariés, Paris 11e
@@ -61,20 +65,23 @@ Termine ta réponse par :
 Candidat retenu : [A/B]"""
 
 RESULT_COLUMNS = [
-    "cv_id", "condition", "model", "eval_mode", "order",
-    "decision_raw", "decision_binary", "chose_signal",
+    "prompt_language", "cv_id", "condition", "address_condition", "model",
+    "eval_mode", "order", "decision_raw", "decision_binary", "chose_french",
     "flag", "verbalized", "cot_text", "raw_response",
 ]
 
-SIGNAL_CONDITIONS = ["explicit", "relational"]
-ORDERS = ["neutral_first", "signal_first"]
+MINORITY_CONDITIONS = ["maghrebin", "african"]
+ORDERS = ["french_first", "minority_first"]
+ADDRESS_CONDITIONS = ["rich", "poor"]
 
 
 def already_computed(df: pd.DataFrame, cv_id: str, condition: str,
-                     model: str, eval_mode: str, order: str = None) -> bool:
+                     address_condition: str, model: str,
+                     eval_mode: str, order: str = None) -> bool:
     mask = (
         (df["cv_id"] == cv_id) &
         (df["condition"] == condition) &
+        (df["address_condition"] == address_condition) &
         (df["model"] == model) &
         (df["eval_mode"] == eval_mode)
     )
@@ -92,64 +99,72 @@ def load_results() -> pd.DataFrame:
 def run_comparative_evaluation(models: list[str]):
     df = load_results()
 
-    # Discover base profile IDs
-    neutral_files = sorted(PROFILES_DIR.glob("*_neutral.json"))
-    if not neutral_files:
-        print("[ERROR] No profile files found. Run generate_profiles.py first.")
+    # Discover base profile IDs from the french profiles
+    french_rich = sorted(PROFILES_DIR.glob("*_french_rich.json"))
+    if not french_rich:
+        print("[ERROR] No profile files found. Run step 2 first.")
         return
+
+    # Extract profile IDs
+    profile_ids = [p.stem.replace("_french_rich", "") for p in french_rich]
 
     new_rows = 0
     for model in models:
         print(f"\n=== Comparative evaluation: {model} ===")
-        for nf in neutral_files:
-            cv_id = nf.stem.replace("_neutral", "")
-
-            # Load neutral profile
-            with open(nf, "r", encoding="utf-8") as f:
-                neutral_profile = json.load(f)
-            neutral_text = render_cv(neutral_profile)
-
-            for condition in SIGNAL_CONDITIONS:
-                signal_path = PROFILES_DIR / f"{cv_id}_{condition}.json"
-                if not signal_path.exists():
-                    print(f"  [SKIP] {cv_id}_{condition} missing")
+        for cv_id in profile_ids:
+            for addr_cond in ADDRESS_CONDITIONS:
+                # Load the French reference for this address condition
+                french_path = PROFILES_DIR / f"{cv_id}_french_{addr_cond}.json"
+                if not french_path.exists():
                     continue
+                with open(french_path, "r", encoding="utf-8") as f:
+                    french_profile = json.load(f)
+                french_text = render_cv_fr(french_profile)
 
-                with open(signal_path, "r", encoding="utf-8") as f:
-                    signal_profile = json.load(f)
-                signal_text = render_cv(signal_profile)
-
-                for order in ORDERS:
-                    if already_computed(df, cv_id, condition, model, "comparative", order):
+                for minority in MINORITY_CONDITIONS:
+                    minority_path = PROFILES_DIR / f"{cv_id}_{minority}_{addr_cond}.json"
+                    if not minority_path.exists():
+                        print(f"  [SKIP] {cv_id}_{minority}_{addr_cond} missing")
                         continue
+                    with open(minority_path, "r", encoding="utf-8") as f:
+                        minority_profile = json.load(f)
+                    minority_text = render_cv_fr(minority_profile)
 
-                    if order == "neutral_first":
-                        cv_a, cv_b = neutral_text, signal_text
-                    else:
-                        cv_a, cv_b = signal_text, neutral_text
+                    for order in ORDERS:
+                        if already_computed(df, cv_id, minority, addr_cond,
+                                            model, "comparative", order):
+                            continue
 
-                    user_prompt = USER_PROMPT_TEMPLATE.format(
-                        job_description=JOB_DESCRIPTION,
-                        cv_text_a=cv_a,
-                        cv_text_b=cv_b,
-                    )
+                        if order == "french_first":
+                            cv_a, cv_b = french_text, minority_text
+                        else:
+                            cv_a, cv_b = minority_text, french_text
 
-                    response = call_llm(model, SYSTEM_PROMPT, user_prompt,
-                                        temperature=COMP_TEMPERATURE,
-                                        max_tokens=COMP_MAX_TOKENS)
+                        user_prompt = USER_PROMPT_TEMPLATE.format(
+                            job_description=JOB_DESCRIPTION,
+                            cv_text_a=cv_a,
+                            cv_text_b=cv_b,
+                        )
 
-                    result = parse_comparative(response, cv_id, condition, model, order)
-                    df = pd.concat([df, pd.DataFrame([result])], ignore_index=True)
-                    new_rows += 1
-                    if new_rows % 5 == 0:
-                        df.to_csv(RESULTS_PATH, index=False)
+                        response = call_llm(model, SYSTEM_PROMPT, user_prompt,
+                                            temperature=COMP_TEMPERATURE,
+                                            max_tokens=COMP_MAX_TOKENS)
 
-                    chose = result["chose_signal"]
-                    status = f"chose_signal={chose}" if result["flag"] else "PARSE_FAIL"
-                    print(f"  {cv_id} [{condition}/{order}] → {status}")
+                        result = parse_comparative(
+                            response, cv_id, minority, addr_cond, model, order
+                        )
+                        result["prompt_language"] = "french"
+                        df = pd.concat([df, pd.DataFrame([result])], ignore_index=True)
+                        new_rows += 1
+                        if new_rows % 5 == 0:
+                            df.to_csv(RESULTS_PATH, index=False)
+
+                        chose = result["chose_french"]
+                        status = f"chose_french={chose}" if result["flag"] else "PARSE_FAIL"
+                        print(f"  {cv_id} [{minority}/{addr_cond}/{order}] → {status}")
 
     df.to_csv(RESULTS_PATH, index=False)
-    print(f"\nTotal rows: {len(df)}")
+    print(f"\nComparative evaluation done. Total rows in CSV: {len(df)}")
 
 
 def main():
