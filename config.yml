@@ -13,13 +13,21 @@ hardware:
   total_vram: 96    # GB
 
 # ============================================================================
-# vLLM CONFIGURATION
+# vLLM CONFIGURATION (local models)
 # ============================================================================
 vllm:
   base_url: "http://localhost:8000/v1"
   api_key: "not-needed"
   gpu_memory_utilization: 0.90
   max_model_len: 4096
+
+# ============================================================================
+# NOVITA AI CONFIGURATION (cloud open-source models)
+# ============================================================================
+novita:
+  base_url: "https://api.novita.ai/v3/openai"
+  # Leave empty to use NOVITA_API_KEY environment variable
+  api_key: ""
 
 # ============================================================================
 # PIPELINE SETTINGS
@@ -39,41 +47,65 @@ pipeline:
 # tensor_parallel_size must be <= 2 (fits in 2 GPUs).
 
 models:
+  # ── Local models (vLLM) ──
   - name: "Jackrong/Qwen3.5-27B-Claude-4.6-Opus-Reasoning-Distilled"
     display_name: "Qwen3.5-27B"
+    provider: "local"
     tensor_parallel_size: 2
     enabled: true
     gpu_memory_utilization: 0.90
 
   - name: "mistralai/Mistral-Small-3.2-24B-Instruct-2506"
     display_name: "Mistral-Small-3.2-24B"
+    provider: "local"
     tensor_parallel_size: 2
     enabled: true
     gpu_memory_utilization: 0.90
 
   - name: "openai/gpt-oss-20b"
     display_name: "gpt-oss-20B"
+    provider: "local"
     tensor_parallel_size: 2
     enabled: true
     gpu_memory_utilization: 0.90
 
   - name: "unsloth/gemma-4-31B-it-GGUF"
     display_name: "Gemma-4-31B-it-GGUF"
+    provider: "local"
     tensor_parallel_size: 2
     enabled: false
     gpu_memory_utilization: 0.90
 
   - name: "nvidia/Nemotron-Cascade-2-30B-A3B"
     display_name: "Nemotron-Cascade-2-30B-A3B"
+    provider: "local"
     tensor_parallel_size: 2
     enabled: false
     gpu_memory_utilization: 0.90
 
   - name: "zai-org/GLM-4.7-Flash"
     display_name: "GLM-4.7-Flash"
+    provider: "local"
     tensor_parallel_size: 2
     enabled: false
     gpu_memory_utilization: 0.90
+
+  # ── Novita AI models (cloud open-source) ──
+  # Replace with actual Novita model IDs you want to use.
+  - name: "meta-llama/Llama-3.1-70B-Instruct"
+    display_name: "Llama-3.1-70B-Novita"
+    provider: "novita"
+    enabled: false
+
+  - name: "Qwen/Qwen2.5-72B-Instruct"
+    display_name: "Qwen2.5-72B-Novita"
+    provider: "novita"
+    enabled: false
+
+  - name: "mistralai/Mixtral-8x22B-Instruct-v0.1"
+    display_name: "Mixtral-8x22B-Novita"
+    provider: "novita"
+    enabled: false
 
 # ============================================================================
 # STEP PARAMETERS

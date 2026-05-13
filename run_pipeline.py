@@ -13,16 +13,17 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from utils.llm_client import get_enabled_models, _get_client
+from utils.llm_client import get_enabled_models, get_model_provider
 from utils.vllm_launcher import start_vllm, stop_vllm, is_server_running
 
 ALL_MODELS = get_enabled_models()
 
 
 def _reset_client():
-    """Force the OpenAI client to reconnect (new model on same port)."""
+    """Force all OpenAI clients to reconnect (new model or provider switch)."""
     import utils.llm_client as lc
-    lc._client = None
+    lc._local_client = None
+    lc._novita_client = None
 
 
 def main():
@@ -72,7 +73,7 @@ def main():
     if args.step in ("1", "all"):
         gen_model = args.gen_model or models[0]
         proc = None
-        if auto_vllm:
+        if auto_vllm and get_model_provider(gen_model) == "local":
             proc = start_vllm(gen_model, timeout=args.vllm_timeout)
             _reset_client()
 
@@ -106,7 +107,7 @@ def main():
     if eval_steps:
         for model in models:
             proc = None
-            if auto_vllm:
+            if auto_vllm and get_model_provider(model) == "local":
                 proc = start_vllm(model, timeout=args.vllm_timeout)
                 _reset_client()
 

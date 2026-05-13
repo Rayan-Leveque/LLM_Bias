@@ -10,7 +10,7 @@ Cette dissociation s'appuie sur deux corpus de littérature distincts :
 
 - **Tests en condition comparative (IAT)** — [Bai et al. (2024, arXiv:2402.04105)](https://arxiv.org/abs/2402.04105) adaptent l'Implicit Association Test (IAT) aux LLMs et introduisent une mesure de *Decision Bias* fondée sur l'évaluation relative de deux candidats. Leur résultat clé : les modèles alignés sur des valeurs égalitaires (GPT-4, Claude, LLaMA2) passent les tests explicites mais révèlent des biais stéréotypés pervasifs en comparaison directe — par exemple, GPT-4 oriente les candidats à noms africains/hispaniques vers des postes de clerc et les candidats à noms caucasiens vers des postes d'encadrement. L'évaluation relative est significativement plus diagnostique que l'évaluation absolue.
 
-Ce phénomène est à rapprocher de la littérature psychologique sur l'évaluation séparée vs. conjointe (Hsee, 1996) et des audit studies (Bertrand & Mullainathan, 2004).
+Ce phénomène est discuté par Bai et al. (2024) pour la comparaison directe et par Gallegos et al. (2025) pour l'évaluation isolée.
 
 ---
 
@@ -68,6 +68,8 @@ Littérature de référence : études de testing ISM Corum, données DARES, [Bai
 ## Modèles
 
 Plusieurs modèles à tester (liste non encore définie). L'objectif à terme est de comparer si le phénomène est universel ou propre à certaines architectures/entraînements.
+
+**Important :** ce pipeline se concentre sur des modèles **open-weight** (déployables localement via vLLM ou via des APIs cloud open-source comme Novita AI). Les modèles propriétaires (GPT-4, Claude, Gemini) ne sont pas testés. Ce choix est méthodologique, pas économique : il garantit la reproductibilité (poids figés), la transparence (pas de post-traitement propriétaire), et la validité écologique (les systèmes de pré-sélection en entreprise sont déployés on-premise). Voir `README.md` pour la justification complète.
 
 ---
 

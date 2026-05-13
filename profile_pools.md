@@ -189,7 +189,7 @@ Toutes les hypothèses suivent la structure : **identifiant · signal · prédic
 |---|---|---|
 | H-N1 | `P(OUI \| nom français) > P(OUI \| nom minoritaire)` — discrimination de base sur le signal nom | FR : Ethnicité × SES |
 | H-N2 | L'effet du signal nom est stable quelle que soit la langue du prompt (`delta_nom_fr ≈ delta_nom_en`) — les associations ethniques des prénoms sont encodées de façon cross-linguistique | Test effet langue |
-| H-N3 | En mode comparatif, le signal nom domine la décision même quand les qualifications sont comparables — conformément à la théorie de l'évaluabilité (Hsee 1996) | FR : mode comparatif |
+| H-N3 | En mode comparatif, le signal nom domine la décision même quand les qualifications sont comparables — comme observé par Bai et al. (2024) | FR : mode comparatif |
 
 ## C.2. Signal adresse (SES / connotation ethnique)
 

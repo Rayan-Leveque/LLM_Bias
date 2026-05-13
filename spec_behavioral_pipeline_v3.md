@@ -10,8 +10,8 @@ The implicit arm (IAT replication of Bai et al. 2024) is already complete (`resu
 - **Single evaluation** → model favors minority (RLHF overcorrection / social desirability)
 - **Comparative evaluation** → model favors majority (implicit stereotype activation)
 
-This dissociation is grounded in Hsee (1996) evaluability theory and tested against
-the empirical backdrop of French audit studies (DARES/IPP/ISM Corum 2021),
+This dissociation is discussed by Bai et al. (2024) for comparative evaluation
+and by Gallegos et al. (2025) for single evaluation.
 
 **Cross-paradigm comparison:**
 IAT scores are paired with behavioral deltas on the same models to test whether implicit association predicts behavioral discrimination direction and magnitude.
@@ -24,6 +24,20 @@ IAT scores are paired with behavioral deltas on the same models to test whether 
 **Language:** French throughout (prompts, CVs, responses)
 **CoT:** enabled on all evaluation calls
 **Temperature:** 0.0 for all evaluation calls, 0.9 for generation, 0.7 for relational injection
+
+### Why open-weight / on-premise models only
+
+This pipeline tests exclusively open-weight models (local vLLM or cloud open-source APIs such as Novita AI). We do not test GPT-4, Claude, or Gemini. This is a deliberate methodological choice:
+
+1. **Ecological validity.** Automated resume-screening systems in enterprise settings are overwhelmingly deployed on-premise or via open-source APIs, not through expensive proprietary endpoints. Auditing these models mirrors the tools actually used by HR software vendors.
+
+2. **Reproducibility.** Open-weight model weights are frozen and versioned. A reviewer can rerun the exact same model (same weights, same tokenizer, same hyperparameters) in two years. Closed-source models change versions without notice, making replication impossible.
+
+3. **Transparency.** Local inference gives us real control over `temperature=0`, output formatting, and the absence of undocumented post-processing (re-rolling, moderation filters, hidden system prompts) that contaminates bias measurement.
+
+4. **Complementarity.** Bai et al. (2024) and Gallegos et al. (2025) have already documented the phenomenon on GPT-4 and Claude. Our contribution is to test its generalization to the open-source ecosystem and to a non-English cultural context.
+
+5. **Scalability.** Testing 8 models on ~1,100 calls each costs a few euros on open-source cloud APIs versus hundreds of dollars on proprietary APIs, enabling rich cross-model analyses (size, architecture, alignment) that would otherwise be infeasible.
 
 ---
 

@@ -46,6 +46,12 @@ def start_vllm(model_display_name: str, timeout: int = 300) -> subprocess.Popen:
         raise ValueError(f"Unknown model: {model_display_name}. "
                          f"Available: {list(_MODEL_CONFIGS.keys())}")
 
+    if mcfg.get("provider", "local") != "local":
+        raise ValueError(
+            f"Model {model_display_name} is not a local model (provider: {mcfg.get('provider')}). "
+            f"Use Novita AI API directly for cloud models."
+        )
+
     hf_name = mcfg["name"]
     tp = mcfg.get("tensor_parallel_size", 1)
     gpu_mem = mcfg.get("gpu_memory_utilization", GPU_MEM_UTIL)
