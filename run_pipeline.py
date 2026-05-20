@@ -13,7 +13,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from utils.llm_client import get_enabled_models, get_model_provider
+from utils.llm_client import get_enabled_models, get_model_provider, set_thinking
 from utils.vllm_launcher import start_vllm, stop_vllm, is_server_running
 
 ALL_MODELS = get_enabled_models()
@@ -56,6 +56,11 @@ def main():
         help="Disable automatic vLLM start/stop (assume server is already running)",
     )
     parser.add_argument(
+        "--no-think",
+        action="store_true",
+        help="Disable Qwen3 thinking/reasoning mode (passes enable_thinking=False)",
+    )
+    parser.add_argument(
         "--vllm-timeout",
         type=int,
         default=300,
@@ -65,6 +70,10 @@ def main():
 
     models = [m.strip() for m in args.models.split(",")]
     auto_vllm = not args.no_auto_vllm
+
+    if args.no_think:
+        set_thinking(False)
+        print("[CONFIG] Qwen3 thinking mode: DISABLED")
 
     needs_llm = args.step in ("1", "3a", "3b", "3c", "all")
 

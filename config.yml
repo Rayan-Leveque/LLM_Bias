@@ -16,7 +16,7 @@ hardware:
 # vLLM CONFIGURATION (local models)
 # ============================================================================
 vllm:
-  base_url: "http://localhost:8000/v1"
+  base_url: "http://172.23.14.2:2482/v1"
   api_key: "not-needed"
   gpu_memory_utilization: 0.90
   max_model_len: 4096
@@ -48,8 +48,8 @@ pipeline:
 
 models:
   # ── Local models (vLLM) ──
-  - name: "Jackrong/Qwen3.5-27B-Claude-4.6-Opus-Reasoning-Distilled"
-    display_name: "Qwen3.5-27B"
+  - name: "Qwen/Qwen3.6-27B-FP8"
+    display_name: "Qwen3.6-27B-FP8"
     provider: "local"
     tensor_parallel_size: 2
     enabled: true
@@ -59,14 +59,14 @@ models:
     display_name: "Mistral-Small-3.2-24B"
     provider: "local"
     tensor_parallel_size: 2
-    enabled: true
+    enabled: false
     gpu_memory_utilization: 0.90
 
   - name: "openai/gpt-oss-20b"
     display_name: "gpt-oss-20B"
     provider: "local"
     tensor_parallel_size: 2
-    enabled: true
+    enabled: false
     gpu_memory_utilization: 0.90
 
   - name: "unsloth/gemma-4-31B-it-GGUF"
@@ -111,21 +111,21 @@ models:
 # STEP PARAMETERS
 # ============================================================================
 generation:
-  model: "Mistral-Small-3.2-24B"  # local model for CV generation
+  model: "Qwen3.6-27B-FP8"  # local model for CV generation
   temperature: 0.9
-  max_tokens: 1500
+  max_tokens: 4000
 
 single_eval:
   temperature: 0.0
-  max_tokens: 800
+  max_tokens: 6000
 
 comparative_eval:
   temperature: 0.0
-  max_tokens: 1000
+  max_tokens: 6000
 
 iat:
   temperature: 0.0
-  max_tokens: 150
+  max_tokens: 2000
   label_variants:
     variant_a: "proper_names"
     variant_b: "ethnonyms_tbd"

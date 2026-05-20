@@ -22,6 +22,9 @@ LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
 _local_client = None
 _novita_client = None
 
+# Thinking mode toggle (for Qwen3 models)
+_thinking_enabled = True
+
 # Build model config lookup: display_name -> {name, provider}
 MODEL_CONFIGS = {}
 for m in config.get("models", []):
@@ -30,6 +33,16 @@ for m in config.get("models", []):
             "name": m["name"],
             "provider": m.get("provider", "local"),
         }
+
+
+def set_thinking(enabled: bool):
+    """Globally enable/disable model thinking mode (Qwen3)."""
+    global _thinking_enabled
+    _thinking_enabled = enabled
+
+
+def get_thinking() -> bool:
+    return _thinking_enabled
 
 
 def _get_local_client():
@@ -105,19 +118,33 @@ def call_llm(model: str, system: str, user: str,
     resolved_model = _resolve_model(model)
     client = _get_local_client() if provider == "local" else _get_novita_client()
 
+    extra_body = None
+    if not _thinking_enabled:
+        extra_body = {"chat_template_kwargs": {"enable_thinking": False}}
+
     for attempt in range(max_retries):
         t0 = time.time()
         try:
-            response = client.chat.completions.create(
-                model=resolved_model,
-                messages=[
+            kwargs = {
+                "model": resolved_model,
+                "messages": [
                     {"role": "system", "content": system},
                     {"role": "user", "content": user},
                 ],
-                temperature=temperature,
-                max_tokens=max_tokens,
-            )
+                "temperature": temperature,
+                "max_tokens": max_tokens,
+            }
+            if extra_body:
+                kwargs["extra_body"] = extra_body
+            response = client.chat.completions.create(**kwargs)
             text = response.choices[0].message.content
+
+            if text is None or text.strip() == "":
+                finish_reason = response.choices[0].finish_reason
+                raise RuntimeError(
+                    f"Empty response from model (finish_reason={finish_reason}). "
+                    f"The model may have consumed all tokens in reasoning/thinking."
+                )
 
             latency = time.time() - t0
             log_raw_response(model, system, user, text, latency)

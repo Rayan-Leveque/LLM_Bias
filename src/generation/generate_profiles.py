@@ -82,9 +82,9 @@ def generate_base_profiles(n: int = 50, model: str = None):
         user_prompt = GENERATION_USER_TEMPLATE.format(cv_id=cv_id)
 
         for attempt in range(3):
-            raw = call_llm(model, GENERATION_SYSTEM, user_prompt,
-                           temperature=GEN_TEMPERATURE, max_tokens=GEN_MAX_TOKENS)
             try:
+                raw = call_llm(model, GENERATION_SYSTEM, user_prompt,
+                               temperature=GEN_TEMPERATURE, max_tokens=GEN_MAX_TOKENS)
                 text = raw.strip()
                 if text.startswith("```"):
                     text = text.split("\n", 1)[1]
@@ -98,10 +98,14 @@ def generate_base_profiles(n: int = 50, model: str = None):
                     json.dump(profile, f, ensure_ascii=False, indent=2)
                 print(f"[OK] {cv_id} generated")
                 break
-            except json.JSONDecodeError as e:
-                print(f"[RETRY {attempt+1}/3] {cv_id} JSON parse error: {e}")
+            except (json.JSONDecodeError, AttributeError) as e:
+                print(f"[RETRY {attempt+1}/3] {cv_id} parse error: {e}")
                 if attempt == 2:
                     print(f"[FAIL] {cv_id} — could not parse after 3 attempts")
+            except Exception as e:
+                print(f"[RETRY {attempt+1}/3] {cv_id} LLM call failed: {e}")
+                if attempt == 2:
+                    print(f"[FAIL] {cv_id} — LLM call failed after 3 attempts")
 
 
 # ── Step 2: Identity Injection (deterministic, no LLM call) ──

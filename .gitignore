@@ -31,7 +31,7 @@ env/
 Thumbs.db
 
 # Résultats (potentiellement volumineux)
-data/results/*
+data/results/*.csv
 !data/results/.gitkeep
 
 # Generated profiles
